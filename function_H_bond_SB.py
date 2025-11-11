@@ -1,7 +1,8 @@
+import numpy as np
+import MDAnalysis as mda
+
 def get_H_bond(input_pdb, ligand_name):
     #Complete_code_for_H-bond_ and_Salt_Bridge
-    import numpy as np
-    import MDAnalysis as mda
     pdb=mda.Universe(input_pdb)
     lig_name=ligand_name
     all_atoms=pdb.select_atoms(f"protein or resname {lig_name}")  #select protein or ligand atom
