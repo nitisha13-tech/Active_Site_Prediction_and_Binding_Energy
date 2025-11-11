@@ -73,9 +73,6 @@ def get_H_bond(input_pdb, ligand_name):
     return hydrogen_bonds
 
 def salt_bridge(input_pdb, ligand_name):
-    import numpy as np
-    import MDAnalysis as mda
-
 
     pdb=mda.Universe(input_pdb)
     lig_name=ligand_name
