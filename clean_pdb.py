@@ -28,11 +28,11 @@ def clean(input_pdb):
         if res.atoms.select_atoms("protein").n_atoms > 0:
             continue
 
-        # skip water
+        
         if res.resname.strip() in water:
             continue
 
-        # skip very small things (ions)
+        
         if res.atoms.n_atoms < 5:
             continue
 
@@ -54,12 +54,9 @@ def clean(input_pdb):
 
     lig = lig_residues[max_index]
 
-    # ----------------------------
-    # FIX CHAIN SELECTION
-    # Prefer PDB chainID; fallback segid
-    # ----------------------------
+    
     try:
-        chain_id = lig.atoms.chainIDs[0].strip()  # real PDB chain ID if present
+        chain_id = lig.atoms.chainIDs[0].strip()  
     except Exception:
         chain_id = ""
 
@@ -70,7 +67,7 @@ def clean(input_pdb):
     chain_label = None
 
     if chain_id:
-        # try both selector spellings depending on MDAnalysis version
+        
         try:
             chain = pdb_all.select_atoms(f"chainID {chain_id}")
         except Exception:
@@ -101,17 +98,14 @@ def clean(input_pdb):
     lig_code = lig.resname
     #print("lig_code:", lig_code)
 
-    # KEEP LIGAND PART SAME STYLE: but write ligand from exact residue to avoid duplicates
-    # (This is a minimal change; your resname-only selection is wrong if same ligand repeats.)
+    
     lig.atoms.write("ligand.pdb")
 
-    # ----------------------------
-    # FIX + ADD MISSING ATOMS/H
-    # ----------------------------
+    
     fixed_pdb_path = f"{output}_chain_{chain_label}_protein_fixed_H.pdb"
 
     try:
-        # PDBFixer must take filename (NOT MDAnalysis AtomGroup)
+        
         fixer = PDBFixer(filename=protein_pdb_path)
 
         fixer.findMissingResidues()
@@ -131,9 +125,7 @@ def clean(input_pdb):
         traceback.print_exc()
         raise
 
-    # ----------------------------
-    # ligand processing (MINIMAL changes: kept your pipeline)
-    # ----------------------------
+    
     lig_n = Chem.MolFromPDBFile("ligand.pdb", removeHs=False, sanitize=False)
     lig_n = Chem.RemoveHs(lig_n, sanitize=False)
 
@@ -141,9 +133,9 @@ def clean(input_pdb):
         list_coords = []
         for line in f:
             if line.startswith("HETATM"):
-                list_coords.append(line)   # FIXED: don't assign append() result
+                list_coords.append(line)   
             elif line.startswith("CONECT"):
-                list_coords.append(line)   # FIXED
+                list_coords.append(line)   
 
     with open("ligand_correct.pdb", "w") as f:
         f.writelines(list_coords)
@@ -179,7 +171,7 @@ def clean(input_pdb):
             info.SetResidueName(lig_code)
             info.SetResidueNumber(1)
 
-            # PDB chain is 1 char; if segid fallback is longer, trim.
+            
             ch = str(chain_label) if chain_label is not None else "A"
             if len(ch) == 0:
                 ch = "A"
