@@ -24,7 +24,7 @@ def clean(input_pdb):
     lig_residues = []
 
     for res in pdb_all.residues:
-        # skip protein residues (FIXED: must use n_atoms)
+        
         if res.atoms.select_atoms("protein").n_atoms > 0:
             continue
 
